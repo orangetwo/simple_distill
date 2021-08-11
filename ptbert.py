@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os, csv, random, torch, torch.nn as nn, numpy as np
+import torch, torch.nn as nn, numpy as np
 import torch.nn.functional as F
 from datasets import Dataset
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import TensorDataset, RandomSampler, SequentialSampler, DataLoader
-from transformers import BertModel, BertPreTrainedModel, get_linear_schedule_with_warmup
-from transformers import BertTokenizer
-from transformers import AdamW
+from torch.utils.data import DataLoader
+from transformers import BertModel, BertPreTrainedModel, get_linear_schedule_with_warmup,BertTokenizer,AdamW
+
 from torch.nn import CrossEntropyLoss
 from tqdm import tqdm, trange
-from sklearn.metrics import f1_score
 from functools import partial
 from sklearn.metrics import accuracy_score
 
@@ -134,21 +132,17 @@ class BertTextCNN(BertPreTrainedModel):
         return logits
 
 
-def compute_metrics(preds, labels):
-    return {'ac': (preds == labels).mean(), 'f1': f1_score(y_true=labels, y_pred=preds)}
 
-
-def main(bert_model='bert-base-chinese', cache_dir=None,
-         max_seq=128, batch_size=16, num_epochs=10, lr=2e-5):
+def main():
     arg = args()
-    tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=True)
+    tokenizer = BertTokenizer.from_pretrained(arg.bert_model, do_lower_case=True)
     mydata = MyData(arg, tokenizer)
     train = MyDataset(mydata.train)
     test = MyDataset(mydata.test)
 
     labels = mydata.labels
 
-    model = BertClassification.from_pretrained(bert_model,
+    model = BertClassification.from_pretrained(arg.bert_model,
                                                cache_dir=arg.cache_dir, num_labels=len(labels))
 
     # You can choose this model.
@@ -169,7 +163,7 @@ def main(bert_model='bert-base-chinese', cache_dir=None,
 
     total_steps = len(train_dataloader) * arg.epochs
 
-    optimizer = AdamW(optimizer_grouped_parameters, lr=lr)
+    optimizer = AdamW(optimizer_grouped_parameters, lr=arg.lr)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=total_steps * arg.warmup_ratio,
                                                 num_training_steps=total_steps)
 
