@@ -261,7 +261,7 @@ def main():
 
                 if acc > best:
                     best = acc
-                    print(f"save the model ->>>>>")
+                    print(f"save the model ->>> /model/model.pt")
                     torch.save(model, './model/model.pt')
         print(f'avg train_loss : {sum(train_loss) / len(train_loss)}')
 
