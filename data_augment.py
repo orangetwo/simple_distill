@@ -4,7 +4,7 @@ import numpy as np
 
 def ngram_sampling(words, p_ng=0.25, ngram_range=(2, 6)):
     """
-
+    n-gram sampling
     """
     if np.random.rand() < p_ng:
         ngram_len = np.random.randint(ngram_range[0], ngram_range[1] + 1)
@@ -35,7 +35,9 @@ def data_augmentation(dataPath, p_mask, p_ng, ngram_range=(2,6), n_iter=20,token
 
             # 数据增强,每句话增强的次数
             for i in range(n_iter):
+                # 1. Masking
                 tokens = [x if np.random.rand() < p_mask else "[MASK]" for x in tokenizer(text)]
+                # 2. n-gram sampling
                 tokens = ngram_sampling(tokens, p_ng, ngram_range)
 
                 input4teacher = ''.join(tokens)
@@ -48,6 +50,9 @@ def data_augmentation(dataPath, p_mask, p_ng, ngram_range=(2,6), n_iter=20,token
 
 
 def get_w2v():
+    """
+    load the word embedding.
+    """
     for line in open('data/cache/word2vec', encoding="utf-8").read().strip().split('\n'):
         line = line.strip().split()
         if not line:
