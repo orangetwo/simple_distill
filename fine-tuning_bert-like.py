@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torch.utils.data import Dataset
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score,classification_report
 from torch.nn import CrossEntropyLoss
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
