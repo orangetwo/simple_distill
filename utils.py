@@ -44,6 +44,8 @@ def convert_w2v_to_embedding(w2v: dict, token_to_index: dict):
             embed.weight.data[token_to_index[token]] = torch.FloatTensor(w2v[token])
             # torch.tensor(w2v[token], dtype=torch.FloatTensor)
 
+    return embed
+
 
 
 
