@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Union
+from typing import Union,List
 
 
 class Tokenizer:
@@ -51,7 +51,7 @@ class Tokenizer:
             else:
                 return [token for token in sequence if token not in self.filter_token]
 
-    def counter_sequences(self, sequences: list[str], save_words_and_frequencies=False):
+    def counter_sequences(self, sequences: List[str], save_words_and_frequencies=False):
         """
         Args:
             sequences: The list of sequence.
@@ -92,7 +92,7 @@ class Tokenizer:
 
         self.token_to_index.update({tok: i for i, tok in enumerate(self.index_to_token)})
 
-    def convert_sentences_to_indices(self, sentences: Union[str, list[str]], unk='<unk>', seg=None):
+    def convert_sentences_to_indices(self, sentences: Union[str, List[str]], unk='<unk>', seg=None):
 
         if seg is not None:
             tokenizer_sent = seg
@@ -113,7 +113,7 @@ class Tokenizer:
         else:
             raise ValueError('The input is neither a list nor a string!')
 
-    def convert_indices_to_sentences(self, indices: Union[list[int], list[list[int]]]):
+    def convert_indices_to_sentences(self, indices: Union[List[int], List[List[int]]]):
 
         assert len(indices) >= 1, 'The length of indices is less than 1!'
 

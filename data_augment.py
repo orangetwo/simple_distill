@@ -1,5 +1,4 @@
 import collections
-import tokenize
 
 import jieba
 import numpy as np
@@ -58,7 +57,7 @@ def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(2, 6), n_it
     return input4student_input4bert_label
 
 
-def get_w2v(tokens=None):
+def get_w2v():
     """
     load the word embedding.
     """
@@ -70,7 +69,7 @@ def get_w2v(tokens=None):
 
 
 if __name__ == '__main__':
-    path = './data/hotel/DA.txt'
+    path = './data/hotel/test.txt'
     # x = data_augmentation(path, n_iter=10)
     # for y in x:
     #     print(y)
@@ -95,12 +94,14 @@ if __name__ == '__main__':
            12: '餐厅', 13: '吃', 14: '的'})
     print({'<unk>': 0, '不错': 1, '，': 2, '。': 3, '也': 4, '下次': 5, '还': 6, '考虑': 7, '入住': 8, '交通': 9, '方便': 10, '在': 11,
            '餐厅': 12, '吃': 13, '的': 14})
-    print(texts)
+    # print(texts)
     vocab.counter_sequences(texts)
 
-    print(vocab.index_to_token)
-    print(vocab.token_to_index)
+    # print(vocab.index_to_token)
+    # print(vocab.token_to_index)
 
-    print(vocab.convert_sentences_to_indices(texts[0]))
-    indices = [3, 5, 6, 14, 13, 8, 2, 7, 4, 11, 5, 10, 15, 9, 12, 4, 3, 2]
+    print(vocab.convert_sentences_to_indices('不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。'))
+    indices = [23, 2, 94, 22, 424, 28, 4, 130, 14, 46, 2, 15, 114, 115, 3, 14, 23, 4]
     print(vocab.convert_indices_to_sentences(indices))
+
+    print(len(vocab))
