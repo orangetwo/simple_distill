@@ -1,10 +1,11 @@
 import collections
 
 import jieba
-import numpy as np
 import torch
 
+import numpy as np
 from Tokenize import tokenizer,Tokenizer
+from utils import save_vocab, convert_w2v_to_embedding, get_w2v
 
 
 def ngram_sampling(words, p_ng=0.25, ngram_range=(2, 6)):
@@ -57,19 +58,8 @@ def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(2, 6), n_it
     return input4student_input4bert_label
 
 
-def get_w2v():
-    """
-    load the word embedding.
-    """
-    for line in open('data/cache/word2vec', encoding="utf-8").read().strip().split('\n'):
-        line = line.strip().split()
-        if not line:  # or line[0] not in tokens:
-            continue
-        yield line[0], np.array(list(map(float, line[1:])))
-
-
 if __name__ == '__main__':
-    path = './data/hotel/test.txt'
+    path = './data/hotel/train.txt'
     # x = data_augmentation(path, n_iter=10)
     # for y in x:
     #     print(y)
@@ -97,11 +87,15 @@ if __name__ == '__main__':
     # print(texts)
     vocab.counter_sequences(texts)
 
-    # print(vocab.index_to_token)
+    print(vocab.index_to_token[:10])
     # print(vocab.token_to_index)
 
-    print(vocab.convert_sentences_to_indices('不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。'))
-    indices = [23, 2, 94, 22, 424, 28, 4, 130, 14, 46, 2, 15, 114, 115, 3, 14, 23, 4]
+    indices = vocab.convert_sentences_to_indices('不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。')
+
     print(vocab.convert_indices_to_sentences(indices))
 
     print(len(vocab))
+    # save_vocab('./vocab.txt', vocab.index_to_token)
+    print(vocab['[MASK]'])
+
+    convert_w2v_to_embedding(dict(get_w2v('./data/cache/word2vec')), vocab.token_to_index)
