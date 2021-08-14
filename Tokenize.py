@@ -147,7 +147,7 @@ def tokenizer(sentence):
 if __name__ == '__main__':
     counter = Counter()
 
-    vocab = Tokenizer(tokenizer=tokenizer, counter=counter)
+    vocab = Tokenizer(tokenizer=tokenizer, counter=counter, filter_token=("[MASK]"))
 
     vocab.counter_sequences(['不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。'])
     # vocab.generate_vocab()
