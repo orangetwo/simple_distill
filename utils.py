@@ -16,12 +16,21 @@ def get_w2v(word2vec_path):
 
 
 def save_vocab(save_path: str, vocab: List[str]):
+    """
+    save vocab
+    """
     with open(save_path, 'w', encoding='utf-8') as fw:
-        for token in vocab:
-            fw.writelines(token + '\n')
+        for idx, token in enumerate(vocab):
+            if idx == len(vocab) - 1:
+                fw.writelines(token)
+            else:
+                fw.writelines(token + '\n')
 
 
 def convert_w2v_to_embedding(w2v: dict, token_to_index: dict):
+    """
+    copy the vectors from word2vec file to nn.embedding
+    """
     dim = len(w2v['我'])
     embed = nn.Embedding(len(token_to_index), dim, padding_idx=token_to_index['<pad>'])
     print(embed.weight.shape)
