@@ -74,10 +74,7 @@ if __name__ == '__main__':
     # x = data_augmentation(path, n_iter=10)
     # for y in x:
     #     print(y)
-    print({0: '<unk>', 1: '不错', 2: '，', 3: '。', 4: '也', 5: '下次', 6: '还', 7: '考虑', 8: '入住', 9: '交通', 10: '方便', 11: '在',
-           12: '餐厅', 13: '吃', 14: '的'})
-    print({'<unk>': 0, '不错': 1, '，': 2, '。': 3, '也': 4, '下次': 5, '还': 6, '考虑': 7, '入住': 8, '交通': 9, '方便': 10, '在': 11,
-           '餐厅': 12, '吃': 13, '的': 14})
+
     tokenizer = tokenizer
 
     counter = collections.Counter()
@@ -104,6 +101,6 @@ if __name__ == '__main__':
     print(vocab.index_to_token)
     print(vocab.token_to_index)
 
-    print(vocab.convert_sentences_to_indices(texts))
-    indices = [[3, 5, 6, 14, 13, 8, 2, 7, 4, 11, 5, 10, 15, 9, 12, 4, 3, 2]]
+    print(vocab.convert_sentences_to_indices(texts[0]))
+    indices = [3, 5, 6, 14, 13, 8, 2, 7, 4, 11, 5, 10, 15, 9, 12, 4, 3, 2]
     print(vocab.convert_indices_to_sentences(indices))
