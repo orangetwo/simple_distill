@@ -100,8 +100,9 @@ if __name__ == '__main__':
     bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
 
     print(convert_sample_to_indices(vocab,bertTokenizer,x[2] ))
+    ids = bertTokenizer.tokenize('我爱你')
+    print(bertTokenizer.encode(ids))
 
-    print(vocab.index_to_token)
 
 
 

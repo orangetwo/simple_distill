@@ -64,7 +64,7 @@ def convert_sample_to_indices(tokenizer4student, tokenizer4teacher, sample: Tupl
     List[int], List[int], int]:
     """
     The input of the student model and the input of the teacher model should be processed separately, and the length
-    should be less than 512.
+    should be less than 510.
     tokenizer4teacher： BertTokenizer
     tokenizer4student:
     """
