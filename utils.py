@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, NoReturn
 import numpy as np
 import torch
 from torch import nn
 
 
-def get_w2v(word2vec_path):
+def get_w2v(word2vec_path: str):
     """
     load the word embedding.
     """
@@ -15,7 +15,7 @@ def get_w2v(word2vec_path):
         yield line[0], np.array(list(map(float, line[1:])))
 
 
-def save_vocab(save_path: str, vocab: List[str]):
+def save_vocab(save_path: str, vocab: List[str]) -> NoReturn:
     """
     save vocab
     """
@@ -35,7 +35,7 @@ def convert_w2v_to_embedding(w2v: dict, token_to_index: dict):
     embed = nn.Embedding(len(token_to_index), dim, padding_idx=token_to_index['<pad>'])
     print(embed.weight.shape)
 
-    _,dim = embed.weight.shape
+    _, dim = embed.weight.shape
     for token in token_to_index.keys():
         if token == '<pad>':
             continue
@@ -44,9 +44,23 @@ def convert_w2v_to_embedding(w2v: dict, token_to_index: dict):
             embed.weight.data[token_to_index[token]] = torch.FloatTensor(w2v[token])
             # torch.tensor(w2v[token], dtype=torch.FloatTensor)
 
+    return embed
 
+
+def char_tokenizer(sentence: str) -> List[str]:
+    if sentence == '':
+        return []
+    else:
+        return [token for token in sentence]
+
+
+def seg(sentence: str) -> List[str]:
+    return sentence.split(' ')
 
 
 if __name__ == '__main__':
     w2v = dict(get_w2v('./data/cache/word2vec'))
     print(len(w2v))
+
+    print(char_tokenizer('依兰爱情故事'))
+

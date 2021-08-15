@@ -1,14 +1,12 @@
-import collections
-
 import jieba
-import torch
-
+import collections
 import numpy as np
-from Tokenize import tokenizer,Tokenizer
-from utils import save_vocab, convert_w2v_to_embedding, get_w2v
+from Tokenize import Tokenizer
+from typing import List, Tuple
+from utils import save_vocab, convert_w2v_to_embedding, get_w2v, char_tokenizer, seg
 
 
-def ngram_sampling(words, p_ng=0.25, ngram_range=(2, 6)):
+def ngram_sampling(words: List[str], p_ng=0.25, ngram_range=(4, 10)) -> List[str]:
     """
     n-gram sampling
     """
@@ -21,8 +19,8 @@ def ngram_sampling(words, p_ng=0.25, ngram_range=(2, 6)):
     return words
 
 
-def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(2, 6), n_iter=20, tokenizer=jieba.lcut,
-                      min_length=2):
+def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(4, 10), n_iter=20, tokenizer=jieba.lcut,
+                      min_length=2) -> List[Tuple[str, str, int]]:
     """
     generate data augment train set.
     """
@@ -59,43 +57,44 @@ def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(2, 6), n_it
 
 
 if __name__ == '__main__':
+    """
+        1. Builds the dictionary on the specified text, paying attention to the implementation of the word \
+            segmentation 
+        2. Convert each sentence to the corresponding index in the dictionary. It is important to \
+            note that the word segmentation in this step is the same as in the first step. 
+    """
+
     path = './data/hotel/train.txt'
-    # x = data_augmentation(path, n_iter=10)
-    # for y in x:
-    #     print(y)
-
-    tokenizer = tokenizer
-
     counter = collections.Counter()
-    vocab = Tokenizer(tokenizer=tokenizer, counter=counter)
-    texts = [' '.join(jieba.cut(line.split('\t', 1)[1].strip())) for line in open(path, encoding="utf-8",).read().strip().split('\n')]
+    n_iter = 10
 
-    from torch import nn
+    # If you want to use word-level, you can use the following code.
+    # Or you can define the word segmentation instead of jieba.lcut.
+    # x = data_augmentation(path, n_iter=n_iter, tokenizer=jieba.lcut)
+    # vocab = Tokenizer(tokenizer=jieba.lcut, counter=counter)
 
-    embeds = nn.Embedding(2, 5)  # 2 个单词，维度 5
+    # Now we use char-level
+    x = data_augmentation(path, n_iter=n_iter, tokenizer=char_tokenizer)
+    vocab = Tokenizer(tokenizer=char_tokenizer, counter=counter)
 
-    print(embeds.weight.data)
-    print(type(embeds.weight.data))
-    embeds.weight.data[0] = torch.FloatTensor([1.1820, 0.0601, 0.1449, 0.4057, 1.3008])
+    texts = [line.split('\t', 1)[1].strip() for line in open(path, encoding="utf-8", ).read().strip().split('\n')]
 
-    print(embeds.weight.data)
-
-    print({0: '<unk>', 1: '不错', 2: '，', 3: '。', 4: '也', 5: '下次', 6: '还', 7: '考虑', 8: '入住', 9: '交通', 10: '方便', 11: '在',
-           12: '餐厅', 13: '吃', 14: '的'})
-    print({'<unk>': 0, '不错': 1, '，': 2, '。': 3, '也': 4, '下次': 5, '还': 6, '考虑': 7, '入住': 8, '交通': 9, '方便': 10, '在': 11,
-           '餐厅': 12, '吃': 13, '的': 14})
-    # print(texts)
     vocab.counter_sequences(texts)
 
-    print(vocab.index_to_token[:10])
-    # print(vocab.token_to_index)
 
-    indices = vocab.convert_sentences_to_indices('不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。')
+    # check
+    indices = vocab.convert_sentences_to_indices('不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。')
+    print(vocab.convert_indices_to_sentences(indices))
+
+    tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
+    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=seg)
+    print(indices)
 
     print(vocab.convert_indices_to_sentences(indices))
 
-    print(len(vocab))
+    print(x[2])
     # save_vocab('./vocab.txt', vocab.index_to_token)
-    print(vocab['[MASK]'])
 
-    convert_w2v_to_embedding(dict(get_w2v('./data/cache/word2vec')), vocab.token_to_index)
+
+
+

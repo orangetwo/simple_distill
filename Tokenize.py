@@ -1,5 +1,9 @@
 from collections import Counter
-from typing import Union,List
+from typing import Union, List, Tuple, Set
+
+import jieba
+
+from simple_distill.utils import seg, char_tokenizer
 
 
 class Tokenizer:
@@ -127,6 +131,23 @@ class Tokenizer:
         else:
             raise ValueError('The input is neither a list of int nor a list of list!')
 
+    def update_vocab(self, add_tokens: Set[str], discard_tokens: Set[str]):
+        if add_tokens:
+            self.index_to_token.extend([token for token in add_tokens if token not in self.token_to_index])
+            self.token_to_index = {token: idx for idx, token in enumerate(self.index_to_token)}
+
+            for token in add_tokens:
+                if token not in self.counter:
+                    self.counter[token] = -1
+
+        if discard_tokens:
+            self.index_to_token = [token for token in self.index_to_token if token not in discard_tokens]
+            self.token_to_index = {token: idx for idx, token in enumerate(self.index_to_token)}
+
+            for token in discard_tokens:
+                if token in self.counter:
+                    del self.counter[token]
+
     def __getitem__(self, token):
 
         assert len(self.token_to_index) > 2, f'The current dictionary size is {len(self.token_to_index)}!!!'
@@ -140,18 +161,24 @@ class Tokenizer:
         return len(self.index_to_token)
 
 
-def tokenizer(sentence):
-    return [token for token in sentence.split(' ')]
-
-
 if __name__ == '__main__':
     counter = Counter()
 
-    vocab = Tokenizer(tokenizer=tokenizer, counter=counter, filter_token=("[MASK]"))
+    vocab = Tokenizer(tokenizer=char_tokenizer, counter=counter)
 
-    vocab.counter_sequences(['不错 ， 下次 还 考虑 入住 。 交通 也 方便 ， 在 餐厅 吃 的 也 不错 。'])
-    # vocab.generate_vocab()
+    vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。'])
 
     print(vocab.index_to_token)
     print(vocab.counter)
     print(vocab.token_to_index)
+
+    print(f"update vocab:")
+    vocab.update_vocab(add_tokens={'wx'},discard_tokens={})
+    print(vocab.index_to_token)
+    print(vocab.counter)
+    print(vocab.token_to_index)
+
+    tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
+    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=seg)
+    print(indices)
+    print(vocab.convert_indices_to_sentences(indices))
