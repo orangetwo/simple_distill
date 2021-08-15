@@ -5,7 +5,7 @@ from transformers import BertTokenizer
 
 from Tokenize import TokenizerX
 from typing import List, Tuple
-from utils import save_vocab, convert_w2v_to_embedding, get_w2v, char_tokenizer, convert_sample_to_indices
+from utils import save_vocab, convert_w2v_to_embedding, get_w2v, char_tokenizer, convert_sample_to_indices, prepare_data
 
 
 def ngram_sampling(words: List[str], p_ng=0.25, ngram_range=(4, 10)) -> List[str]:
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     indices = vocab.convert_sentences_to_indices('不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。')
     print(vocab.convert_indices_to_sentences(indices))
 
-    tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
+    tmp = '不 错 ， 下 次 还 考 虑 入 [MASK] 。 交 通 也 方 [MASK] ， 在 餐 厅 吃 的 也 [MASK] 错 。'
     indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
 
@@ -97,9 +97,9 @@ if __name__ == '__main__':
 
     print(x[2])
     # save_vocab('./vocab.txt', vocab.index_to_token)
-    print(x)
-    bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
-
-    print(convert_sample_to_indices(vocab, bertTokenizer, x[2]))
-    ids = bertTokenizer.tokenize('我爱你')
-    print(bertTokenizer.encode(ids))
+    from functools import partial
+    func = partial(convert_sample_to_indices,tokenizer4student=vocab, tokenizer4teacher=BertTokenizer.from_pretrained('./bert-base-chinese'))
+    y = [('不 错 ， 下 次 还 考 虑 入 [MASK] 。 交 通 也 方 [MASK] ， 在 餐 厅 吃 的 也 [MASK] 错 。', '不错，下次还考虑入[MASK]。交通也方[MASK]，在餐厅吃的也[MASK]错。', 1)
+]
+    t = prepare_data(y, func=func)
+    print(t)

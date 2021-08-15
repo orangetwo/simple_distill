@@ -60,7 +60,7 @@ def seg(sentence: str) -> List[str]:
     return sentence.split(' ')
 
 
-def convert_sample_to_indices(tokenizer4student, tokenizer4teacher, sample: Tuple[str, str, int], max_seq=510) -> Tuple[
+def convert_sample_to_indices(sample: Tuple[str, str, int],tokenizer4student, tokenizer4teacher, max_seq=510) -> Tuple[
     List[int], List[int], int]:
     """
     The input of the student model and the input of the teacher model should be processed separately, and the length
@@ -74,9 +74,17 @@ def convert_sample_to_indices(tokenizer4student, tokenizer4teacher, sample: Tupl
 
     teacher_tokens = tokenizer4teacher.tokenize(sample[1])
     teacher_tokens = teacher_tokens[:max_seq]
-    teacher_indices = tokenizer4teacher.convert_tokens_to_ids(teacher_tokens)
+    teacher_indices = tokenizer4teacher.encode(teacher_tokens)
 
     return student_indices, teacher_indices, sample[2]
+
+
+def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[int], Tuple[List], int]]:
+    result = []
+    for sample in samples:
+        result.append(func(sample))
+
+    return result
 
 
 if __name__ == '__main__':
@@ -88,4 +96,3 @@ if __name__ == '__main__':
     bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
     x = bertTokenizer.tokenize
     print(x('什么哇'))
-
