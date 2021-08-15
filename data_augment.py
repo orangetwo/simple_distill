@@ -22,9 +22,9 @@ def ngram_sampling(words: List[str], p_ng=0.25, ngram_range=(4, 10)) -> List[str
 
 
 def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(4, 10), n_iter=20, tokenizer=jieba.lcut,
-                      min_length=2) -> List[Tuple[str, str, int]]:
+                      min_length=2, da=True) -> List[Tuple[str, str, int]]:
     """
-    generate data augment train set.
+
     """
     input4student_input4bert_label = []
 
@@ -34,26 +34,28 @@ def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(4, 10), n_i
             assert len(tmp) == 2, 'error line!'
 
             label, text = tmp
+
             input4student = ' '.join(tokenizer(text))
             input4teacher = text
             if len(input4student) <= min_length or len(text) <= min_length:
                 continue
 
             input4student_input4bert_label.append((input4student, input4teacher, int(label)))
-            added_inputs = {input4teacher}
 
-            # 数据增强,每句话增强的次数
-            for i in range(n_iter):
-                # 1. Masking
-                tokens = [x if np.random.rand() < p_mask else "[MASK]" for x in tokenizer(text)]
-                # 2. n-gram sampling
-                tokens = ngram_sampling(tokens, p_ng, ngram_range)
+            if da:
+                added_inputs = {input4teacher}
+                # 数据增强,每句话增强的次数
+                for i in range(n_iter):
+                    # 1. Masking
+                    tokens = [x if np.random.rand() < p_mask else "[MASK]" for x in tokenizer(text)]
+                    # 2. n-gram sampling
+                    tokens = ngram_sampling(tokens, p_ng, ngram_range)
 
-                input4teacher = ''.join(tokens)
-                # 防止重复加入
-                if input4teacher not in added_inputs:
-                    input4student = ' '.join(tokens)
-                    input4student_input4bert_label.append((input4student, input4teacher, int(label)))
+                    input4teacher = ''.join(tokens)
+                    # 防止重复加入
+                    if input4teacher not in added_inputs:
+                        input4student = ' '.join(tokens)
+                        input4student_input4bert_label.append((input4student, input4teacher, int(label)))
 
     return input4student_input4bert_label
 
@@ -83,7 +85,6 @@ if __name__ == '__main__':
 
     vocab.counter_sequences(texts)
 
-
     # check
     indices = vocab.convert_sentences_to_indices('不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。')
     print(vocab.convert_indices_to_sentences(indices))
@@ -99,10 +100,6 @@ if __name__ == '__main__':
     print(x)
     bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
 
-    print(convert_sample_to_indices(vocab,bertTokenizer,x[2] ))
+    print(convert_sample_to_indices(vocab, bertTokenizer, x[2]))
     ids = bertTokenizer.tokenize('我爱你')
     print(bertTokenizer.encode(ids))
-
-
-
-
