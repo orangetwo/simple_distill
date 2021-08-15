@@ -92,10 +92,10 @@ class MyData(object):
 
         # or
         # tokens = tokens[:max_seq]
-        # indices = tokenizer.convert_tokens_to_ids(tokens)
+        # indices = tokenizer.encode(tokens, add_special_tokens=True)
 
         tokens = ["[CLS]"] + tokens[:max_seq] + ["[SEP]"]
-        indices = tokenizer.encode(tokens, add_special_tokens=False)
+        indices = tokenizer.convert_tokens_to_ids(tokens)
 
         return indices
 
