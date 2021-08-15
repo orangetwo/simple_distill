@@ -1,7 +1,9 @@
-from typing import List, NoReturn
+from typing import List, NoReturn, Tuple
 import numpy as np
 import torch
 from torch import nn
+from transformers import BertTokenizer
+from Tokenize import TokenizerX
 
 
 def get_w2v(word2vec_path: str):
@@ -58,9 +60,32 @@ def seg(sentence: str) -> List[str]:
     return sentence.split(' ')
 
 
+def convert_sample_to_indices(tokenizer4student, tokenizer4teacher, sample: Tuple[str, str, int], max_seq=510) -> Tuple[
+    List[int], List[int], int]:
+    """
+    The input of the student model and the input of the teacher model should be processed separately, and the length
+    should be less than 512.
+    tokenizer4teacher： BertTokenizer
+    tokenizer4student:
+    """
+    assert len(sample) == 3, 'The length of sample is error!'
+    student_indices = tokenizer4student.convert_sentences_to_indices(sample[0], seg=TokenizerX.seg)
+    student_indices = student_indices[:max_seq]
+
+    teacher_tokens = tokenizer4teacher.tokenize(sample[1])
+    teacher_tokens = teacher_tokens[:max_seq]
+    teacher_indices = tokenizer4teacher.convert_tokens_to_ids(teacher_tokens)
+
+    return student_indices, teacher_indices, sample[2]
+
+
 if __name__ == '__main__':
     w2v = dict(get_w2v('./data/cache/word2vec'))
     print(len(w2v))
 
     print(char_tokenizer('依兰爱情故事'))
+
+    bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
+    x = bertTokenizer.tokenize
+    print(x('什么哇'))
 

@@ -1,12 +1,8 @@
 from collections import Counter
 from typing import Union, List, Tuple, Set
 
-import jieba
 
-from simple_distill.utils import seg, char_tokenizer
-
-
-class Tokenizer:
+class TokenizerX:
     def __init__(self, tokenizer, counter, max_size=None, min_freq=1,
                  filter_token=(), specials=('<unk>', '<pad>'), lower=True):
         """
@@ -148,6 +144,11 @@ class Tokenizer:
                 if token in self.counter:
                     del self.counter[token]
 
+    @staticmethod
+    def seg(sentence: str) -> List[str]:
+
+        return sentence.split(' ')
+
     def __getitem__(self, token):
 
         assert len(self.token_to_index) > 2, f'The current dictionary size is {len(self.token_to_index)}!!!'
@@ -164,7 +165,15 @@ class Tokenizer:
 if __name__ == '__main__':
     counter = Counter()
 
-    vocab = Tokenizer(tokenizer=char_tokenizer, counter=counter)
+
+    def charX(sentence: str) -> List[str]:
+        if sentence == '':
+            return []
+        else:
+            return [token for token in sentence]
+
+
+    vocab = TokenizerX(tokenizer=charX, counter=counter)
 
     vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。'])
 
@@ -173,12 +182,12 @@ if __name__ == '__main__':
     print(vocab.token_to_index)
 
     print(f"update vocab:")
-    vocab.update_vocab(add_tokens={'wx'},discard_tokens={})
+    vocab.update_vocab(add_tokens={'wx'}, discard_tokens={})
     print(vocab.index_to_token)
     print(vocab.counter)
     print(vocab.token_to_index)
 
     tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
-    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=seg)
+    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))

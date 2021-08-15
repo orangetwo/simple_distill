@@ -1,9 +1,11 @@
 import jieba
 import collections
 import numpy as np
-from Tokenize import Tokenizer
+from transformers import BertTokenizer
+
+from Tokenize import TokenizerX
 from typing import List, Tuple
-from utils import save_vocab, convert_w2v_to_embedding, get_w2v, char_tokenizer, seg
+from utils import save_vocab, convert_w2v_to_embedding, get_w2v, char_tokenizer, convert_sample_to_indices
 
 
 def ngram_sampling(words: List[str], p_ng=0.25, ngram_range=(4, 10)) -> List[str]:
@@ -64,7 +66,7 @@ if __name__ == '__main__':
             note that the word segmentation in this step is the same as in the first step. 
     """
 
-    path = './data/hotel/train.txt'
+    path = './data/hotel/DA.txt'
     counter = collections.Counter()
     n_iter = 10
 
@@ -75,7 +77,7 @@ if __name__ == '__main__':
 
     # Now we use char-level
     x = data_augmentation(path, n_iter=n_iter, tokenizer=char_tokenizer)
-    vocab = Tokenizer(tokenizer=char_tokenizer, counter=counter)
+    vocab = TokenizerX(tokenizer=char_tokenizer, counter=counter)
 
     texts = [line.split('\t', 1)[1].strip() for line in open(path, encoding="utf-8", ).read().strip().split('\n')]
 
@@ -87,14 +89,19 @@ if __name__ == '__main__':
     print(vocab.convert_indices_to_sentences(indices))
 
     tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
-    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=seg)
+    indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
 
     print(vocab.convert_indices_to_sentences(indices))
 
     print(x[2])
     # save_vocab('./vocab.txt', vocab.index_to_token)
+    print(x)
+    bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
 
+    print(convert_sample_to_indices(vocab,bertTokenizer,x[2] ))
+
+    print(vocab.index_to_token)
 
 
 
