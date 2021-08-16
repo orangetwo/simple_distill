@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from transformers import BertTokenizer
 from Tokenize import TokenizerX
+from torch.utils.data import dataset
 
 
 def get_w2v(word2vec_path: str):
@@ -60,7 +61,7 @@ def seg(sentence: str) -> List[str]:
     return sentence.split(' ')
 
 
-def convert_sample_to_indices(sample: Tuple[str, str, int],tokenizer4student, tokenizer4teacher, max_seq=510) -> Tuple[
+def convert_sample_to_indices(sample: Tuple[str, str, int], tokenizer4student, tokenizer4teacher, max_seq=510) -> Tuple[
     List[int], List[int], int]:
     """
     The input of the student model and the input of the teacher model should be processed separately, and the length
@@ -85,6 +86,28 @@ def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[i
         result.append(func(sample))
 
     return result
+
+
+class Mydataset(dataset):
+
+    def __init__(self, data):
+        self.data = data
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        return self.data[index]
+
+
+def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_batch_first=True):
+    # sample : (student inputs ids, teacher input ids, label)
+
+    # process student inputs
+
+    # process teacher inputs
+
+    pass
 
 
 if __name__ == '__main__':
