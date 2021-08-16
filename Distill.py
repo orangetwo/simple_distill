@@ -5,7 +5,7 @@ from transformers import BertTokenizer
 
 from DataAugment import data_augmentation
 from Tokenize import TokenizerX
-from utils import char_tokenizer, convert_sample_to_indices, prepare_data, Mydataset
+from utils import char_tokenizer, convert_sample_to_indices, prepare_data, Mydataset, collate_fn
 
 path = './data/hotel/DA.txt'
 counter = collections.Counter()
