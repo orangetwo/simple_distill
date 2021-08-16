@@ -1,6 +1,7 @@
 import collections
 from functools import partial
 
+from torch.utils.data import DataLoader
 from transformers import BertTokenizer
 
 from DataAugment import data_augmentation
@@ -34,9 +35,4 @@ test = prepare_data(test_raw, func=func)
 train = Mydataset(train)
 test = Mydataset(test)
 
-
-class Dataloader(object):
-    pass
-
-
-train_iter = Dataloader(train,batch_size =16,shuffle=True,collate_fn=collate_fn)
+train_iter = DataLoader(train, batch_size=16, shuffle=True, collate_fn=collate_fn)
