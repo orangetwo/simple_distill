@@ -69,7 +69,7 @@ class TokenizerX:
 
     def generate_vocab(self, save_words_and_frequencies=False):
         # sort by frequency, then alphabetically
-        for tok in self.specials:
+        for tok in self.specials_tokens:
             if tok in counter:
                 print(f"special token '{tok}' in your vocab!"
                       f"Please check your special tokens!!!")
@@ -196,4 +196,3 @@ if __name__ == '__main__':
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))
 
-    {tok: i for i, tok in enumerate([1,2,3,4])}
