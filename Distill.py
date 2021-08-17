@@ -18,12 +18,12 @@ vocab = TokenizerX(tokenizer=char_tokenizer, counter=counter)
 texts = [line.split('\t', 1)[1].strip() for line in open(train_path, encoding="utf-8", ).read().strip().split('\n')]
 vocab.counter_sequences(texts)
 
-# if you want to update the vocab by the test set you can use following code.
+# if you want to update the vocab by the test set you can use the following code.
 # texts = [line.split('\t', 1)[1].strip() for line in open(test_file_path, encoding="utf-8",
 #                                                          ).read().strip().split('\n')]
 # vocab.counter_sequences(texts)
 
-# if '[MASK] in vocab, delete it.'
+# if '[MASK]' in vocab, delete it.'
 vocab.update_vocab(add_tokens={}, discard_tokens={'[MASK]'})
 
 
