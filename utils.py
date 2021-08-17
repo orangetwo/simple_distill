@@ -111,7 +111,7 @@ def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_ba
 
 
 if __name__ == '__main__':
-    w2v = dict(get_w2v('./data/cache/word2vec'))
+    w2v = dict(get_w2v('./data/wordembedding/word2vec'))
     print(len(w2v))
 
     print(char_tokenizer('依兰爱情故事'))

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import os
 from functools import partial
 
 import torch
@@ -29,8 +30,8 @@ def args():
     parser.add_argument('--num_epochs', type=int, default=2, help='the num of epochs')
     parser.add_argument('--lr', type=float, default=2e-5, help='learning rate')
     parser.add_argument('--model', type=str, default='bert-base-chinese')
-    parser.add_argument('--train', type=str, default='./data/hotel/hotel.txt')
-    parser.add_argument('--test', type=str, default='./data/hotel/test.txt')
+    parser.add_argument('--train', type=str, default='./data/train.txt')
+    parser.add_argument('--test', type=str, default='./data/test.txt')
     parser.add_argument('--cache_dir', type=str, default=None, help='Model cache path')
     parser.add_argument('--warmup_ratio', type=float, default=0.1)
 
@@ -212,6 +213,9 @@ def main():
     optimizer = AdamW(optimizer_grouped_parameters, lr=arg.lr)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=total_steps * arg.warmup_ratio,
                                                 num_training_steps=total_steps)
+
+    if not os.path.exists('./model/'):
+        os.makedirs('./model')
 
     model.train()
     total_step = 0

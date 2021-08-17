@@ -15,7 +15,7 @@ class TokenizerX:
                 will be prepended to the vocabulary. Default: ['<unk'>, '<pad>'].
             tokenizer: tokenizer function, Default: None.
             filter_token: filter the unuseful token. Default: ().
-            collections.Counter object holding the frequencies of
+            counter: collections.Counter object holding the frequencies of
                 each value found in the data.
         """
 
@@ -24,9 +24,9 @@ class TokenizerX:
         self.tokenizer = tokenizer
         self.counter = counter
         self.index_to_token = list()
-        self.specials = specials
+        self.specials_tokens = specials
 
-        self.index_to_token.extend(list(specials))
+        # self.index_to_token.extend(list(specials))
         self.token_to_index = dict()
 
         self.unk = specials[0]
@@ -70,7 +70,9 @@ class TokenizerX:
     def generate_vocab(self, save_words_and_frequencies=False):
         # sort by frequency, then alphabetically
         for tok in self.specials:
-            del self.counter[tok]
+            if tok in counter:
+                print(f"special token '{tok}' in your vocab!"
+                      f"Please check your special tokens!!!")
 
         words_and_frequencies = sorted(self.counter.items(), key=lambda tup: tup[0])
         words_and_frequencies.sort(key=lambda tup: tup[1], reverse=True)
@@ -79,9 +81,11 @@ class TokenizerX:
         if save_words_and_frequencies:
             pass
 
+        self.index_to_token = list(self.specials_tokens)
+
         for word, freq in words_and_frequencies:
             if self.max_size is not None:
-                if freq < self.min_freq or len(self.itos) == (self.max_size + len(self.specials)):
+                if freq < self.min_freq or len(self.index_to_token) == (self.max_size + len(self.specials)):
                     break
                 self.index_to_token.append(word)
             else:
@@ -90,7 +94,7 @@ class TokenizerX:
                     break
                 self.index_to_token.append(word)
 
-        self.token_to_index.update({tok: i for i, tok in enumerate(self.index_to_token)})
+        self.token_to_index = {tok: i for i, tok in enumerate(self.index_to_token)}
 
     def convert_sentences_to_indices(self, sentences: Union[str, List[str]], unk='<unk>', seg=None):
 
@@ -191,3 +195,5 @@ if __name__ == '__main__':
     indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))
+
+    {tok: i for i, tok in enumerate([1,2,3,4])}

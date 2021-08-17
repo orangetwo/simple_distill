@@ -68,7 +68,7 @@ if __name__ == '__main__':
             note that the word segmentation in this step is the same as in the first step. 
     """
 
-    path = './data/hotel/DA.txt'
+    path = './data/DA.txt'
     counter = collections.Counter()
     n_iter = 10
 
