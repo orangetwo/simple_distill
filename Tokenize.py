@@ -85,7 +85,7 @@ class TokenizerX:
 
         for word, freq in words_and_frequencies:
             if self.max_size is not None:
-                if freq < self.min_freq or len(self.index_to_token) == (self.max_size + len(self.specials)):
+                if freq < self.min_freq or len(self.index_to_token) == (self.max_size + len(self.specials_tokens)):
                     break
                 self.index_to_token.append(word)
             else:

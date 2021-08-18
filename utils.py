@@ -2,6 +2,7 @@ from typing import List, NoReturn, Tuple
 import numpy as np
 import torch
 from torch import nn
+from torch.nn.utils.rnn import pad_sequence
 from transformers import BertTokenizer
 from Tokenize import TokenizerX
 from torch.utils.data import dataset
@@ -80,7 +81,7 @@ def convert_sample_to_indices(sample: Tuple[str, str, int], tokenizer4student, t
     return student_indices, teacher_indices, sample[2]
 
 
-def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[int], Tuple[List], int]]:
+def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[int],List[int], int]]:
     result = []
     for sample in samples:
         result.append(func(sample))
@@ -100,14 +101,25 @@ class Mydataset(dataset):
         return self.data[index]
 
 
-def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_batch_first=True):
+def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_batch_first=True,
+               teacher_padding_value=0, student_padding_value=1):
     # sample : (student inputs ids, teacher input ids, label)
 
     # process student inputs
+    student_lengths = torch.LongTensor([len(sample[0]) for sample in samples])
+    student_input = [torch.LongTensor([sample[0]]) for sample in samples]
+    student_input = pad_sequence(student_input, padding_value=student_padding_value, batch_first=True)
 
     # process teacher inputs
+    teacher_lengths = [torch.LongTensor(len(sample[1])*[1]) for sample in samples]
+    teacher_inputs = [torch.LongTensor(sample[1]) for sample in samples]
+    attn_mask = pad_sequence(teacher_lengths, padding_value=0, batch_first=True)
+    input_ids = pad_sequence(teacher_inputs, padding_value=teacher_padding_value, batch_first=True)
 
-    pass
+    # labels
+    labels = torch.LongTensor([sample[2]] for sample in samples)
+
+    return student_input, student_lengths, input_ids, attn_mask, labels
 
 
 if __name__ == '__main__':
