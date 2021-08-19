@@ -20,7 +20,7 @@ class LstmClassification(nn.Module):
 
         self.ff = nn.Linear(hidden_dim, n_class)
 
-    def forward(self, x, lengths, ):
+    def forward(self, x, lengths, **kwargs):
         # x : (batch_size X seq_len)
         x = self.embed(x)
 

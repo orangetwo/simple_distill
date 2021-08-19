@@ -5,8 +5,8 @@ from torch import nn
 from torch.nn.utils.rnn import pad_sequence
 from transformers import BertTokenizer
 from Tokenize import TokenizerX
-from torch.utils.data import dataset
-
+# from torch.utils.data import dataset
+from torch.utils.data import Dataset
 
 def get_w2v(word2vec_path: str):
     """
@@ -37,7 +37,7 @@ def convert_w2v_to_embedding(w2v: dict, token_to_index: dict):
     """
     dim = len(w2v['我'])
     embed = nn.Embedding(len(token_to_index), dim, padding_idx=token_to_index['<pad>'])
-    print(embed.weight.shape)
+    # print(embed.weight.shape)
 
     _, dim = embed.weight.shape
     for token in token_to_index.keys():
@@ -89,7 +89,7 @@ def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[i
     return result
 
 
-class Mydataset(dataset):
+class Mydataset(Dataset):
 
     def __init__(self, data):
         self.data = data
@@ -101,7 +101,7 @@ class Mydataset(dataset):
         return self.data[index]
 
 
-def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_batch_first=True,
+def collate_fn(samples: List[Tuple[List[int], List[int], int]],
                teacher_padding_value=0, student_padding_value=1):
     # sample : (student inputs ids, teacher input ids, label)
 
@@ -123,11 +123,14 @@ def collate_fn(samples: List[Tuple[List[int], List[int], int]], student_input_ba
 
 
 if __name__ == '__main__':
-    w2v = dict(get_w2v('./data/wordembedding/word2vec'))
-    print(len(w2v))
+    # w2v = dict(get_w2v('./data/wordembedding/word2vec'))
+    # print(len(w2v))
 
     print(char_tokenizer('依兰爱情故事'))
 
     bertTokenizer = BertTokenizer.from_pretrained('./bert-base-chinese')
     x = bertTokenizer.tokenize
     print(x('什么哇'))
+
+    embed = nn.Embedding(3,4)
+    print(embed.weight.data.shape[1])

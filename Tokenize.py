@@ -70,7 +70,7 @@ class TokenizerX:
     def generate_vocab(self, save_words_and_frequencies=False):
         # sort by frequency, then alphabetically
         for tok in self.specials_tokens:
-            if tok in counter:
+            if tok in self.counter:
                 print(f"special token '{tok}' in your vocab!"
                       f"Please check your special tokens!!!")
 

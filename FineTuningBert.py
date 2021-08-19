@@ -217,7 +217,6 @@ def main():
     if not os.path.exists('./model/'):
         os.makedirs('./model')
 
-    model.train()
     total_step = 0
     best = float('-inf')
     #
@@ -230,7 +229,7 @@ def main():
         train_loss = []
         for step, batch in enumerate(
                 train_dataloader):  # enumerate(tqdm(train_dataloader, desc=f'Training Epoch {_}')):
-
+            model.train()
             total_step = total_step + 1
             input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
             # print(f"input_ids shape : {input_ids.shape}")
