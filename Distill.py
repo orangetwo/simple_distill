@@ -78,11 +78,15 @@ mse_loss = nn.MSELoss() # 均方误差损失函数
 
 total_iter = 0
 alpha = 0.25
+
 for num in range(n_epochs):
-    for i, bacth in train_iter:
-        optimizer.zero_grad()
+    for i, bacth in enumerate(train_iter):
+
         total_iter += 1
         model.train()
+
+        optimizer.zero_grad()
+
         student_input, student_lengths, input_ids, attn_mask, labels = (element.to(device) for element in bacth)
 
         with torch.no_grad():
@@ -98,7 +102,9 @@ for num in range(n_epochs):
         optimizer.step()
 
         if total_iter % 100 == 0:
-            # TODO
+            # TODO:
+            model.eval()
+
             pass
 
 
