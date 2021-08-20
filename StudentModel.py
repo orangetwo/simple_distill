@@ -7,7 +7,7 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 class LstmClassification(nn.Module):
     def __init__(self, vocab_size, embed_dim, embedding=None, n_class=2, hidden_dim=None, pad_idx=1):
-
+        super(LstmClassification, self).__init__()
         if embedding is not None:
             self.embed = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx)
             self.embed.weight.data = embedding.weight.data
@@ -41,3 +41,7 @@ class TextCnn(nn.Module):
         pass
     def forward(self):
         pass
+
+
+if __name__ == '__main__':
+    model = LstmClassification(10, 10)
