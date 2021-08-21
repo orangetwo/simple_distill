@@ -9,9 +9,8 @@ from torch.utils.data import DataLoader
 from transformers import BertTokenizer
 
 from DataAugment import data_augmentation
-from StudentModel import LstmClassification
 from Tokenize import TokenizerX
-from model import BertBase
+from model import BertBase, LstmClassification
 from utils import char_tokenizer, convert_sample_to_indices, prepare_data, Mydataset, collate_fn, get_w2v, \
     convert_w2v_to_embedding, save_vocab
 
@@ -109,7 +108,7 @@ for num in range(n_epochs):
         optimizer.step()
 
         if total_iter % 100 == 0:
-            # TODO: attention to save model.
+            # TODO: attention to save the model.
             model.eval()
 
             preds = []
