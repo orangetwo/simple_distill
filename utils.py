@@ -8,6 +8,7 @@ from Tokenize import TokenizerX
 # from torch.utils.data import dataset
 from torch.utils.data import Dataset
 
+
 def get_w2v(word2vec_path: str):
     """
     load the word embedding.
@@ -81,7 +82,7 @@ def convert_sample_to_indices(sample: Tuple[str, str, int], tokenizer4student, t
     return student_indices, teacher_indices, sample[2]
 
 
-def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[int],List[int], int]]:
+def prepare_data(samples: List[Tuple[str, str, int]], func) -> List[Tuple[List[int], List[int], int]]:
     result = []
     for sample in samples:
         result.append(func(sample))
@@ -102,8 +103,11 @@ class Mydataset(Dataset):
 
 
 def collate_fn(samples: List[Tuple[List[int], List[int], int]],
-               teacher_padding_value=0, student_padding_value=1):
+               teacher_padding_value=0, student_padding_value=1, output_teacher=True):
     # sample : (student inputs ids, teacher input ids, label)
+
+    # labels
+    labels = torch.LongTensor([sample[2]] for sample in samples)
 
     # process student inputs
     student_lengths = torch.LongTensor([len(sample[0]) for sample in samples])
@@ -111,15 +115,15 @@ def collate_fn(samples: List[Tuple[List[int], List[int], int]],
     student_input = pad_sequence(student_input, padding_value=student_padding_value, batch_first=True)
 
     # process teacher inputs
-    teacher_lengths = [torch.LongTensor(len(sample[1])*[1]) for sample in samples]
-    teacher_inputs = [torch.LongTensor(sample[1]) for sample in samples]
-    attn_mask = pad_sequence(teacher_lengths, padding_value=0, batch_first=True)
-    input_ids = pad_sequence(teacher_inputs, padding_value=teacher_padding_value, batch_first=True)
+    if output_teacher:
+        teacher_lengths = [torch.LongTensor(len(sample[1]) * [1]) for sample in samples]
+        teacher_inputs = [torch.LongTensor(sample[1]) for sample in samples]
+        attn_mask = pad_sequence(teacher_lengths, padding_value=0, batch_first=True)
+        input_ids = pad_sequence(teacher_inputs, padding_value=teacher_padding_value, batch_first=True)
 
-    # labels
-    labels = torch.LongTensor([sample[2]] for sample in samples)
-
-    return student_input, student_lengths, input_ids, attn_mask, labels
+        return student_input, student_lengths, input_ids, attn_mask, labels
+    else:
+        return student_input, student_lengths, labels
 
 
 if __name__ == '__main__':
@@ -132,5 +136,5 @@ if __name__ == '__main__':
     x = bertTokenizer.tokenize
     print(x('什么哇'))
 
-    embed = nn.Embedding(3,4)
+    embed = nn.Embedding(3, 4)
     print(embed.weight.data.shape[1])

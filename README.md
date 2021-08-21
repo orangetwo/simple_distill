@@ -16,3 +16,18 @@
    - Masking: 以p-mask的概率，随机地将一个词替换为``[MASK]``，在student模型里就是``[UNK]``，而在bert中就是``[MASK]``。这个规则能够clarify每个词对label的贡献，例如，teacher网络对于``"I [MASK] the comedy"``产生的logits比``"I loved the comedy"``产出的logits要低。
    - POS-guided word replacement: 以p-pos的概率，随机地把一个词替换成相同POS(part-of-speech) tag的另一个词（如，把how替换成what）。为了保持原始的训练集的分布，新词从使用POS tag进行re-normalize的unigram的分布中采样出来。
    - N-gram sampling: 以p-ng的概率，从{1,2,…,5}中随机选一个n，然后随机采样出一个ngram。这种方法相当于随机扔掉句子的其他部分，是一种更aggressive的masking。
+
+
+## 使用方法
+
+首先在训练集上微调Bert(配置好训练集文件路径)
+```bash
+python FineTuningBert.py
+```
+
+然后把BERT的知识蒸馏到小模型里
+```bash
+python Distill.py
+```
+
+如果需要使用已经训练好的embedding,注意调整`Distill.py`中的`word_embedding`参数。
