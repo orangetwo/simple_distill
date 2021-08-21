@@ -115,7 +115,7 @@ for num in range(n_epochs):
                 with torch.no_grad():
                     logits = model(student_input, student_lengths)
 
-                    preds.extend(torch.argmax(logits, dim=0).detach().cpu().tolist())
+                    preds.extend(torch.argmax(logits, dim=1).detach().cpu().tolist())
                     turth.extend(labels.detach().cpu().tolist())
 
             acc = accuracy_score(turth, preds)
