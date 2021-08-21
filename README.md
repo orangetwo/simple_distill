@@ -31,3 +31,5 @@ python Distill.py
 ```
 
 如果需要使用已经训练好的embedding,注意调整`Distill.py`中的`word_embedding`参数。
+
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=orangetwo&repo=simple_distill)](https://github.com/orangetwo/simple_distill)
