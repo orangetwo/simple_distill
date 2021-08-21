@@ -5,16 +5,17 @@ import os
 from functools import partial
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+
 
 from torch.utils.data import Dataset
 from sklearn.metrics import accuracy_score
-from torch.nn import CrossEntropyLoss
+
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from tqdm import tqdm, trange
-from transformers import BertModel, BertPreTrainedModel, get_linear_schedule_with_warmup, BertTokenizer, AdamW
+from transformers import get_linear_schedule_with_warmup, BertTokenizer, AdamW
+
+from model import BertBase
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -128,56 +129,6 @@ def collate_fn(examples, padding_idx=0):
     return inputs, masks, targets
 
 
-class BertBase(BertPreTrainedModel):
-    def __init__(self, config, num_labels=2):
-        super(BertBase, self).__init__(config)
-        self.num_labels = num_labels
-        self.bert = BertModel(config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
-        self.init_weights()
-
-    def forward(self, input_ids, input_mask, label_ids):
-        pooled_output = self.bert(input_ids, None, input_mask).pooler_output
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
-        pred = torch.max(logits, 1)[1]
-        if label_ids is not None:
-            loss_fct = CrossEntropyLoss()
-            return loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1)), pred
-        return logits, pred
-
-
-class BertTextCNN(BertPreTrainedModel):
-    def __init__(self, config, hidden_size=128, num_labels=2):
-        super(BertTextCNN, self).__init__(config)
-        self.num_labels = num_labels
-        self.bert = BertModel(config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.conv1 = nn.Conv2d(1, hidden_size, (3, config.hidden_size))
-        self.conv2 = nn.Conv2d(1, hidden_size, (4, config.hidden_size))
-        self.conv3 = nn.Conv2d(1, hidden_size, (5, config.hidden_size))
-        self.classifier = nn.Linear(hidden_size * 3, num_labels)
-        self.apply(self.init_bert_weights)
-
-    def forward(self, input_ids, input_mask, label_ids):
-        sequence_output, _ = self.bert(input_ids, None, input_mask, output_all_encoded_layers=False)
-        out = self.dropout(sequence_output).unsqueeze(1)
-        c1 = torch.relu(self.conv1(out).squeeze(3))
-        p1 = F.max_pool1d(c1, c1.size(2)).squeeze(2)
-        c2 = torch.relu(self.conv2(out).squeeze(3))
-        p2 = F.max_pool1d(c2, c2.size(2)).squeeze(2)
-        c3 = torch.relu(self.conv3(out).squeeze(3))
-        p3 = F.max_pool1d(c3, c3.size(2)).squeeze(2)
-        pool = self.dropout(torch.cat((p1, p2, p3), 1))
-        logits = self.classifier(pool)
-        pred = torch.max(logits, 1)[1]
-        if label_ids is not None:
-            loss_fct = CrossEntropyLoss()
-            return loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1)), pred
-        return logits, pred
-
-
 def main():
     arg = args()
     tokenizer = BertTokenizer.from_pretrained(arg.bert_model, do_lower_case=True)
@@ -224,6 +175,7 @@ def main():
     #     input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
     #     print(input_ids.shape)
 
+    print(f"start ->>> ")
     for _ in range(arg.num_epochs):
 
         train_loss = []
@@ -267,7 +219,7 @@ def main():
                 if acc > best:
                     best = acc
                     print(f"save the model ->>> /model/model.pt")
-                    torch.save(model, './model/model.pt')
+                    torch.save(model.state_dict(), './model/model.pt')
         print(f'avg train_loss : {sum(train_loss) / len(train_loss)}')
 
 

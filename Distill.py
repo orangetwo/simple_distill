@@ -11,6 +11,7 @@ from transformers import BertTokenizer
 from DataAugment import data_augmentation
 from StudentModel import LstmClassification
 from Tokenize import TokenizerX
+from model import BertBase
 from utils import char_tokenizer, convert_sample_to_indices, prepare_data, Mydataset, collate_fn, get_w2v, \
     convert_w2v_to_embedding, save_vocab
 
@@ -50,9 +51,9 @@ test = Mydataset(test)
 
 print(vocab['<pad>'])
 collate = partial(collate_fn, student_padding_value=vocab['<pad>'])
-train_iter = DataLoader(train, batch_size=16, shuffle=True, collate_fn=collate)
+train_iter = DataLoader(train, batch_size=4, shuffle=True, collate_fn=collate)
 collate = partial(collate_fn, student_padding_value=vocab['<pad>'], output_teacher=False)
-test_iter = DataLoader(test, batch_size=16, shuffle=False, collate_fn=collate)
+test_iter = DataLoader(test, batch_size=4, shuffle=False, collate_fn=collate)
 
 n_epochs = 20
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -72,7 +73,11 @@ else:
 
 model.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=2e-5)
-teacherModel = torch.load('./model.pth', map_location=device)
+
+# 和 FineTuningBert初始化参数保持一致
+teacherModel = BertBase('./bert-base-chinese', cache_dir=None, num_labels=2)
+teacherModel.load_state_dict(torch.load('./model/model.pt'))
+teacherModel.to(device)
 teacherModel.eval()
 
 ce_loss = nn.CrossEntropyLoss()  # 交叉熵损失函数
@@ -104,7 +109,7 @@ for num in range(n_epochs):
         optimizer.step()
 
         if total_iter % 100 == 0:
-            # TODO:
+            # TODO: attention to save model.
             model.eval()
 
             preds = []
