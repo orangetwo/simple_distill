@@ -180,7 +180,7 @@ if __name__ == '__main__':
     vocab = TokenizerX(tokenizer=charX, counter=counter)
 
     vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。'])
-
+    print(f"\nupdate vocab:")
     print(vocab.index_to_token)
     print(vocab.counter)
     print(vocab.token_to_index)
@@ -191,11 +191,11 @@ if __name__ == '__main__':
     print(vocab.counter)
     print(vocab.token_to_index)
 
-    print(f"\nupdate vocab:")
     # vocab.update_vocab(add_tokens={'wx'}, discard_tokens={})
-    print(vocab.index_to_token)
-    print(vocab.counter)
-    print(vocab.token_to_index)
+    # print(f"\nupdate vocab:")
+    # print(vocab.index_to_token)
+    # print(vocab.counter)
+    # print(vocab.token_to_index)
 
     tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
     indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
