@@ -185,8 +185,14 @@ if __name__ == '__main__':
     print(vocab.counter)
     print(vocab.token_to_index)
 
-    print(f"update vocab:")
-    vocab.update_vocab(add_tokens={'wx'}, discard_tokens={})
+    vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。嘀嘀咕咕'])
+    print(f"\nupdate vocab:")
+    print(vocab.index_to_token)
+    print(vocab.counter)
+    print(vocab.token_to_index)
+
+    print(f"\nupdate vocab:")
+    # vocab.update_vocab(add_tokens={'wx'}, discard_tokens={})
     print(vocab.index_to_token)
     print(vocab.counter)
     print(vocab.token_to_index)
