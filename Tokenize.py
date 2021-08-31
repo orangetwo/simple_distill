@@ -4,8 +4,8 @@ from typing import Union, List, Tuple, Set
 
 class TokenizerX:
     def __init__(self, tokenizer, counter, max_size=None, min_freq=1,
-                 filter_token=(), specials=('<unk>', '<pad>'), lower=True,
-                 unk='<unk>'):
+                 filter_token=(), specials=(), lower=True,
+                 unk='<unk>', pad='<pad>'):
         """
         Args:
             max_size: The maximum size of the vocabulary, or None for no
@@ -20,19 +20,19 @@ class TokenizerX:
                 each value found in the data.
         """
 
-        assert unk in specials, f'Check specials {specials} and unk {unk}!'
-
         self.filter_token = filter_token
         self.min_freq = max(min_freq, 1)
         self.tokenizer = tokenizer
         self.counter = counter
         self.index_to_token = list()
-        self.specials_tokens = specials
 
         # self.index_to_token.extend(list(specials))
         self.token_to_index = dict()
 
         self.unk = unk
+        self.pad = pad
+
+        self.specials_tokens = specials + (self.unk, self.pad )
         self.max_size = max_size
         self.lower = lower
 
@@ -204,4 +204,7 @@ if __name__ == '__main__':
     indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))
+
+
+    print(vocab[vocab.pad])
 

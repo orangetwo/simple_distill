@@ -48,10 +48,10 @@ test = prepare_data(test_raw, func=func)
 train = Mydataset(train)
 test = Mydataset(test)
 
-print(vocab['<pad>'])
-collate = partial(collate_fn, student_padding_value=vocab['<pad>'])
+print(vocab[vocab.pad])
+collate = partial(collate_fn, student_padding_value=vocab[vocab.pad])
 train_iter = DataLoader(train, batch_size=4, shuffle=True, collate_fn=collate)
-collate = partial(collate_fn, student_padding_value=vocab['<pad>'], output_teacher=False)
+collate = partial(collate_fn, student_padding_value=vocab[vocab.pad], output_teacher=False)
 test_iter = DataLoader(test, batch_size=4, shuffle=False, collate_fn=collate)
 
 n_epochs = 20
