@@ -1,9 +1,10 @@
+import pickle
 from collections import Counter
 from typing import Union, List, Tuple, Set
 
 
 class TokenizerX:
-    def __init__(self, tokenizer, counter, max_size=None, min_freq=1,
+    def __init__(self, tokenizer=None, counter=None, max_size=None, min_freq=1,
                  filter_token=(), specials=('<unk>', '<pad>'), lower=True):
         """
         Args:
@@ -191,6 +192,8 @@ if __name__ == '__main__':
     print(vocab.counter)
     print(vocab.token_to_index)
 
+
+
     # vocab.update_vocab(add_tokens={'wx'}, discard_tokens={})
     # print(f"\nupdate vocab:")
     # print(vocab.index_to_token)
@@ -202,3 +205,17 @@ if __name__ == '__main__':
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))
 
+    with open('vocab1.txt','wb') as f:
+        pickle.dump(vocab.token_to_index, f)
+
+    with open('vocab1.txt', 'rb') as f:
+        list2 = pickle.load(f)
+
+    print('kill bill')
+    print(list2)
+
+    bill = TokenizerX()
+
+    tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
+    indices = bill.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
+    print(indices)
