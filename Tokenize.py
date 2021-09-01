@@ -3,7 +3,7 @@ from typing import Union, List, Tuple, Set
 
 
 class TokenizerX:
-    def __init__(self, tokenizer, counter, max_size=None, min_freq=1,
+    def __init__(self, tokenizer=None, counter=None, max_size=None, min_freq=1,
                  filter_token=(), specials=(), lower=True,
                  unk='<unk>', pad='<pad>'):
         """
@@ -32,7 +32,7 @@ class TokenizerX:
         self.unk = unk
         self.pad = pad
 
-        self.specials_tokens = specials + (self.unk, self.pad )
+        self.specials_tokens = specials + (self.unk, self.pad)
         self.max_size = max_size
         self.lower = lower
 
@@ -208,3 +208,9 @@ if __name__ == '__main__':
 
     print(vocab[vocab.pad])
 
+    bill = TokenizerX()
+    bill.token_to_index = {'<unk>': 0, '<pad>': 1, '。': 2, '不': 3, '也': 4, '错': 5, '，': 6, '下': 7, '交': 8, '住': 9, '便': 10, '入': 11, '厅': 12, '吃': 13, '咕': 14, '嘀': 15, '在': 16, '方': 17, '次': 18, '的': 19, '考': 20, '虑': 21, '还': 22, '通': 23, '餐': 24}
+
+    tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
+    indices = bill.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
+    print(indices)
