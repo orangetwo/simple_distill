@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Union, List, Tuple, Set
+from typing import Union, List, Tuple, Set, NoReturn
 
 
 class TokenizerX:
@@ -36,7 +36,7 @@ class TokenizerX:
         self.max_size = max_size
         self.lower = lower
 
-    def convert_sequence_to_tokens(self, sequence: str) -> list:
+    def convert_sequence_to_tokens(self, sequence: str) -> List[str]:
         """
         Args:
             sequence: Input sequence.
@@ -54,7 +54,7 @@ class TokenizerX:
             else:
                 return [token for token in sequence if token not in self.filter_token]
 
-    def counter_sequences(self, sequences: List[str], save_words_and_frequencies=False):
+    def counter_sequences(self, sequences: List[str], save_words_and_frequencies=False) -> NoReturn:
         """
         Args:
             sequences: The list of sequence.
@@ -70,7 +70,7 @@ class TokenizerX:
 
         self.generate_vocab(save_words_and_frequencies=save_words_and_frequencies)
 
-    def generate_vocab(self, save_words_and_frequencies=False):
+    def generate_vocab(self, save_words_and_frequencies=False) -> NoReturn:
         # sort by frequency, then alphabetically
         for tok in self.specials_tokens:
             if tok in self.counter:
@@ -99,7 +99,7 @@ class TokenizerX:
 
         self.token_to_index = {tok: i for i, tok in enumerate(self.index_to_token)}
 
-    def convert_sentences_to_indices(self, sentences: Union[str, List[str]], unk='<unk>', seg=None):
+    def convert_sentences_to_indices(self, sentences: Union[str, List[str]], unk='<unk>', seg=None) -> Union[List[int], List[List[int]]]:
 
         if seg is not None:
             tokenizer_sent = seg
@@ -120,7 +120,7 @@ class TokenizerX:
         else:
             raise ValueError('The input is neither a list nor a string!')
 
-    def convert_indices_to_sentences(self, indices: Union[List[int], List[List[int]]]):
+    def convert_indices_to_sentences(self, indices: Union[List[int], List[List[int]]]) -> Union[List[str], List[List[str]]]:
 
         assert len(indices) >= 1, 'The length of indices is less than 1!'
 
@@ -199,13 +199,13 @@ if __name__ == '__main__':
     # print(vocab.index_to_token)
     # print(vocab.counter)
     # print(vocab.token_to_index)
-
+    print('\n')
     tmp = '不 错 [MASK] [MASK] [MASK] 还 考 [MASK] 入 住 。 交 通 也 方 便 [MASK] 在 餐 厅 吃 的 [MASK] [MASK] 错 。'
     indices = vocab.convert_sentences_to_indices(sentences=tmp, seg=TokenizerX.seg)
     print(indices)
     print(vocab.convert_indices_to_sentences(indices))
 
-
+    print('\n')
     print(vocab[vocab.pad])
 
     bill = TokenizerX()
