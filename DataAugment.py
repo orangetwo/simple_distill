@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     texts = [line.split('\t', 1)[1].strip() for line in open(path, encoding="utf-8", ).read().strip().split('\n')]
 
-    vocab.counter_sequences(texts)
+    vocab.fit_sequences(texts)
 
     # check
     indices = vocab.convert_sentences_to_indices('不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。')
