@@ -54,7 +54,7 @@ class TokenizerX:
             else:
                 return [token for token in sequence if token not in self.filter_token]
 
-    def counter_sequences(self, sequences: List[str], save_words_and_frequencies=False) -> NoReturn:
+    def fit_sequences(self, sequences: List[str], save_words_and_frequencies=False) -> NoReturn:
         """
         Args:
             sequences: The list of sequence.
@@ -182,13 +182,13 @@ if __name__ == '__main__':
 
     vocab = TokenizerX(tokenizer=charX, counter=counter)
 
-    vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。'])
+    vocab.fit_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。'])
     print(f"\nupdate vocab:")
     print(vocab.index_to_token)
     print(vocab.counter)
     print(vocab.token_to_index)
 
-    vocab.counter_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。嘀嘀咕咕'])
+    vocab.fit_sequences(['不错，下次还考虑入住。交通也方便，在餐厅吃的也不错。嘀嘀咕咕'])
     print(f"\nupdate vocab:")
     print(vocab.index_to_token)
     print(vocab.counter)
