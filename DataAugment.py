@@ -21,7 +21,7 @@ def ngram_sampling(words: List[str], p_ng=0.25, ngram_range=(4, 10)) -> List[str
     return words
 
 
-def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(4, 10), n_iter=0, tokenizer=jieba.lcut,
+def data_augmentation(dataPath, p_mask=0.1, p_ng=0.25, ngram_range=(4, 10), n_iter=0, tokenizer=jieba.lcut,
                       min_length=2) -> List[Tuple[str, str, int]]:
     """
 
@@ -47,7 +47,7 @@ def data_augmentation(dataPath, p_mask=0.75, p_ng=0.25, ngram_range=(4, 10), n_i
                 # 数据增强,每句话增强的次数
                 for i in range(n_iter):
                     # 1. Masking
-                    tokens = [x if np.random.rand() < p_mask else "[MASK]" for x in tokenizer(text)]
+                    tokens = [x if np.random.rand() > p_mask else "[MASK]" for x in tokenizer(text)]
                     # 2. n-gram sampling
                     tokens = ngram_sampling(tokens, p_ng, ngram_range)
 
